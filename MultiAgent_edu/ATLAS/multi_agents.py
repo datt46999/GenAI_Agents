@@ -7,9 +7,10 @@ from pydantic import BaseModel, Field
 from typing import Optional, Union, Literal
 
 from langchain_core.messages import HumanMessage, SystemMessage, BaseMessage
+from langchain_openai import ChatOpenAI
 from langgraph.graph import StateGraph, START, END
 
-from utils import AcademicState, NeMoLLaMa
+from utils import AcademicState, NeMoLLaMa, OpenAILLM
 from advisor_agent import AdvisorAgent
 from notewrite_agent import NoteWriteAgent
 from planner_agent import PlannerAgent
@@ -28,8 +29,11 @@ setting:
 
 """
 load_dotenv()
-llm_key= os.getenv("MEMOTRON_3_5_LIGHTNING_30B_A3B_KEY")
-llm = NeMoLLaMa(llm_key)
+# llm_key= os.getenv("MEMOTRON_3_5_LIGHTNING_30B_A3B_KEY")
+# llm = NeMoLLaMa(llm_key)
+
+openai_key = os.getenv("OPENAI_API_KEY")
+llm = OpenAILLM(openai_key)
 
 class AgentExecutor:
     def __init__(self, llm):
@@ -93,7 +97,7 @@ class AgentExecutor:
 
             return {
                 'results':{
-                    'agent_output': results
+                    'agent_outputs': results
                 }
             }
         except Exception as e:
@@ -173,6 +177,13 @@ async def profile_analyzer(state : AcademicState)-> dict:
     ]
     response = await llm.agenerate(messages)
 
+    # profile = state.get("profile") or {}
+
+    # response = await llm.ainvoke([
+    #     SystemMessage(content=PROFILE_ANALYZER_PROMPT),
+    #     HumanMessage(content=json.dumps(profile, ensure_ascii=False, default=str)),
+    # ])
+
     # Format and structure the analysis results
     return {
         "results": {
@@ -209,9 +220,11 @@ def create_agent_graph(llm)->StateGraph:
     workflow.add_node('coordinator', coordinator_agent)
     workflow.add_node('execute', executor.execute)
     workflow.add_node('profile_analyzer', profile_analyzer)
-    def route_to_parallel_agents(state: AcademicState)-> StateGraph:
+   
+    def route_to_parallel_agents(state: AcademicState) -> list[str]:
+
         """
-            determine which agent should be process with current agent
+        determine which agent should be process with current agent
 
             Analyzer coordination's output to route work to apporiable agent.
             Default planner if no specific agents are required
@@ -222,19 +235,18 @@ def create_agent_graph(llm)->StateGraph:
                 List of agent next
         """
         analysis = state["results"].get("coordinator_analysis", {})
-        require_agent = analysis.get("required_agents",[])
+        required_agents = analysis.get("required_agents", [])
+        executed = set(state["results"].get("agent_outputs", {}).keys())
 
         next_nodes = []
-
-        if "PLANNER" in require_agent:
+        if "PLANNER" in required_agents and "planner" not in executed:
             next_nodes.append('calendar_analyzer')
-        if "NOTEWRITE" in require_agent:
+        if "NOTEWRITE" in required_agents and "notewrite" not in executed:
             next_nodes.append('notewriter_analyze')
-        if "ADVISOR" in require_agent:
+        if "ADVISOR" in required_agents and "advisor" not in executed:
             next_nodes.append('advisor_analyze')
 
-        return next_nodes if next_nodes else ['calendar_analyzer']
-
+        return next_nodes if next_nodes else []
     """
     ===============================
     Agent Subgraph Node

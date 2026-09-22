@@ -83,16 +83,18 @@ class PlannerAgent(ReActAgent):
         3. Finally generate plan
         """
         subgraph = StateGraph(AcademicState)
+        subgraph.set_entry_point("calendar_analyzer")
         subgraph.add_node("calendar_analyzer", self.calendar_analysis)
         subgraph.add_node("task_analysis", self.task_analysis)
         subgraph.add_node("plan_generate", self.plan_generate)
 
         subgraph.add_edge("calendar_analyzer", "task_analysis")
         subgraph.add_edge("task_analysis", "plan_generate")
+        subgraph.add_edge("plan_generate", END) 
 
 
         # set where is workflow begin
-        subgraph.set_entry_point("calendar_analyzer")
+        
         return subgraph.compile()
 
     async def calendar_analysis(self, state: AcademicState) -> AcademicState: 
@@ -107,7 +109,7 @@ class PlannerAgent(ReActAgent):
         future = now + timedelta(days=7)
 
         filtered_events =[event for event in events
-                       if now <= datetime.fromisoformat(events['starts']['dateTime'])<future]
+                       if now <= datetime.fromisoformat(event['starts']['dateTime'])<future]
 
         prompt = """Analyze calender event and identify:
         Events: {events}
@@ -192,7 +194,7 @@ class PlannerAgent(ReActAgent):
           - Task Analysis: {task_analysis}
 
           EXAMPLES:
-          {json.dumps(self.few_shot_examples, indent=2)}
+          {json.dumps(self.few_shot_example, indent=2)}
 
           INSTRUCTIONS:
           1. Follow ReACT pattern:
@@ -234,12 +236,12 @@ class PlannerAgent(ReActAgent):
 
         response = await self.llm.agenerate(messages, temperature = 0.5)
         return {
-                "results": {
-                    "final_plan": {
-                        "plan": response
+                'results': {
+                    'generated_notes':{
+                        'notes': response
                     }
                 }
-        }
+            }
 
     async def __call__(self, state: AcademicState) -> AcademicState:
         """
@@ -251,7 +253,7 @@ class PlannerAgent(ReActAgent):
         try:
             final_state = await self.workflow.ainvoke(state)
 
-            return {"notes": final_state["results"].get("generated_notes")}
+            return {"notes": final_state["results"]["generated_notes"]['notes']}
 
         except:
             return {'notes', 'Error generate notes. Please try again.'}

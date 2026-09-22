@@ -3,14 +3,23 @@ import json
 
 from dotenv import load_dotenv
 from typing import Dict, List
-from utils import AcademicState, NeMoLLaMa
+from utils import AcademicState, NeMoLLaMa, OpenAILLM
 import traceback
+
+
+from langchain_openai import ChatOpenAI
+from langchain_core.messages import HumanMessage, SystemMessage, BaseMessage
+
 
 from system_prompts import COORDINATOR_PROMPT
 
 load_dotenv()
-llm_key = os.getenv("MEMOTRON_3_5_LIGHTNING_30B_A3B_KEY")
-llm = NeMoLLaMa(llm_key)
+# llm_key = os.getenv("MEMOTRON_3_5_LIGHTNING_30B_A3B_KEY")
+# llm = NeMoLLaMa(llm_key)
+
+
+openai_key = os.getenv("OPENAI_API_KEY")
+llm = OpenAILLM(openai_key)
 async def analyses_context(state: AcademicState) -> Dict:
     """
     Analysis the academic state context to inform coordination decision-making
@@ -128,7 +137,7 @@ async def coordinator_agent(state: AcademicState) -> dict:
     Return:
         Coordination analysis including require agent, priorities and execution group 
     """
-    print("COORD state keys:", list(state.keys()), "| messages:", state.get("messages"))
+    # print("COORD state keys:", list(state.keys()), "| messages:", state.get("messages"))
     try:
         # Analyze current context and extract lastest querry
             context = await analyses_context(state)
@@ -149,9 +158,20 @@ async def coordinator_agent(state: AcademicState) -> dict:
 
 
             
-            # parse response and structure coordinary analysis
-            analysis = parse_coordinator_response(response)
+            # # parse response and structure coordinary analysis
+            # analysis = parse_coordinator_response(response)
+            # system_prompt = COORDINATOR_PROMPT.format(
+            #     request=query,
+            #     context=json.dumps(context, indent=2),
+            # )
 
+            # response = await llm.ainvoke([
+            #     SystemMessage(content=system_prompt),
+            #     HumanMessage(content=query),
+            # ])
+            # text = response.content
+
+            analysis = parse_coordinator_response(response) or {}
 
             
             return {

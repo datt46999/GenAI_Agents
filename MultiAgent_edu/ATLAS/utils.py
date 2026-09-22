@@ -7,8 +7,8 @@ from pydantic import BaseModel, Field
 from datetime import datetime, timedelta, timezone
 
 
-from langchain_core.messages import BaseMessage
-
+from langchain_core.messages import BaseMessage, HumanMessage, SystemMessage, AIMessage
+from langchain_openai import ChatOpenAI
 
 from openai import AsyncOpenAI, OpenAI
 """
@@ -110,6 +110,16 @@ class NeMoLLaMa:
         )
         return completion.choices[0].message.content
 
+    
+ROLE_MAP = {"system": SystemMessage, "user": HumanMessage, "assistant": AIMessage}
+class OpenAILLM:
+    def __init__(self, api_key: str, model: str = "gpt-4o-mini"):
+        self.client = ChatOpenAI(model=model, api_key=api_key)
+
+    async def agenerate(self, messages: list[dict], temperature: float | None = None) -> str:
+        lc_messages = [ROLE_MAP[m["role"]](content=m["content"]) for m in messages]
+        client = self.client.bind(temperature=temperature) if temperature is not None else self.client
+        return (await client.ainvoke(lc_messages)).content
 
 """
 ==========================

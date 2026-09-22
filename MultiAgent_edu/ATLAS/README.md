@@ -56,6 +56,9 @@ Run the demo locally using **Conda**.
 * **Model:** `nvidia/nemotron-3.5-lightning-30b-a3b`
 * **API:** [NVIDIA Build](https://build.nvidia.com/models)
 
+### OR
+* **Model:** `openai-4o-mini`
+
 ### ⚙️ Configuration
 
 Create a `.env` file in the project directory:
@@ -64,6 +67,8 @@ Create a `.env` file in the project directory:
 BASE_URL=https://integrate.api.nvidia.com/v1
 MODEL_NAME= MODEL USING
 MEMOTRON_3_5_LIGHTNING_30B_A3B_KEY=YOUR_API_KEY
+
+OPENAI_API_KEY=YOUR_API_KEY
 ```
 
 ### 🚀 Run

@@ -6,6 +6,8 @@ from langgraph.graph import StateGraph, END, START
 
 from utils import AcademicState, ReActAgent
 
+
+
 class NoteWriteAgent(ReActAgent):
     """
     NoteWrite agent with it own subgraph workflow for note generation.
@@ -110,7 +112,7 @@ class NoteWriteAgent(ReActAgent):
         """
 
         response = await self.llm.agenerate(
-            {'role':'user', 'content': prompt}
+            [{'role':'user', 'content': prompt}]
         )
         return {
             "results":{
@@ -134,8 +136,8 @@ class NoteWriteAgent(ReActAgent):
         Return:
             Updata state with generate note
         """
+        analysis = state["results"].get('learning_analysis', {}).get('analysis', '')
 
-        analysis = state["results"].get('learning_style', '')
         learning_style = state['profile']['learning_preferences']['learning_style']
 
         prompt = f"""Create concise, high-impact study materials based on analysis:
@@ -157,7 +159,7 @@ class NoteWriteAgent(ReActAgent):
         4. Emergency tips
         """
         responses = await self.llm.agenerate(
-            {'role':'system', 'content': prompt}
+            [{'role':'system', 'content': prompt}]
         )
         return {
             'results': {
@@ -176,6 +178,6 @@ class NoteWriteAgent(ReActAgent):
         try:
             final_state = await self.workflow.ainvoke(state)
             # notes = final_state['results'].get('generated_notes', {})
-            return {'notes', final_state['results'].get('generated_notes')}
+            return {'notes': final_state['results']["generated_notes"]['notes']}
         except Exception as e:
             return{'notes': "Error generate note. Please try again"}

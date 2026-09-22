@@ -7,7 +7,7 @@ from dotenv import load_dotenv
 from datetime import datetime, timezone, timedelta
 
 from langchain_core.messages import HumanMessage, SystemMessage, BaseMessage
-
+from langchain_openai import ChatOpenAI
 from rich.console import Console
 from rich.markdown import Markdown
 from rich.panel import Panel
@@ -16,15 +16,18 @@ from rich import box
 from rich.style import Style
 
 
-from utils import NeMoLLaMa, AcademicState
+from utils import NeMoLLaMa, AcademicState, OpenAILLM
 from data_manager import DataManager
 from multi_agents import create_agent_graph
 load_dotenv()
 
 
 
-llm_name = os.getenv("MODEL_NAME")
-llm_key = os.getenv("MEMOTRON_3_5_LIGHTNING_30B_A3B_KEY")
+# llm_name = os.getenv("MODEL_NAME")
+# llm_key = os.getenv("MEMOTRON_3_5_LIGHTNING_30B_A3B_KEY")
+
+openai_key = os.getenv("OPENAI_API_KEY")
+llm = OpenAILLM(openai_key)
 async def run_all_system(profile_json: str, calendar_json: str, task_json: str):
     """
     Run the entire academic assistance system with improve output handling.
@@ -47,8 +50,8 @@ async def run_all_system(profile_json: str, calendar_json: str, task_json: str):
         console.print("\n[bold magenta]🎓 ATLAS: Academic Task Learning Agent System[/bold magenta]")
         console.print("[italic blue]Initializing academic support system...[/italic blue]\n")
 
-        llm = NeMoLLaMa(llm_key)
-
+        # llm = NeMoLLaMa(llm_key)
+        # llm = ChatOpenAI(model= 'gpt-4o-mini', temperature = 0.5)
         dm = DataManager()
         dm.load_data(profile_json, calendar_json, task_json)
 
@@ -59,6 +62,8 @@ async def run_all_system(profile_json: str, calendar_json: str, task_json: str):
 
         # Construct initial state object
         # This contains all context needed by the agents
+
+       
         state = {
             "messages": [HumanMessage(content=user_input)],  # User request
             "profile": dm.get_student_profile("student_123"),  # Student info
@@ -180,7 +185,8 @@ async def load_json_and_test(path_file: str):
                     return
 
         print("\nStarting academic assistance workflow...")
-        llm = NeMoLLaMa(llm_key)
+        # llm = NeMoLLaMa(llm_key)
+        llm = ChatOpenAI(model= 'gpt-4o-mini', temperature = 0.5)
         coordinator_output, output = await run_all_system(
             json_contents['profile'],
             json_contents['calendar'],

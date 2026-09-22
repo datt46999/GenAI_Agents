@@ -62,11 +62,11 @@ def process(user_input: str, user_id: str):
     ).content
 
 
-# if __name__ == "__main__":
-#     user_input = "How are you today?"
-#     session_id = "1"
-#     print(process(user_input, session_id))
-#     # for message in store[session_id].messages:
-#     #     print(f"{message.type}: {message.content}")
+if __name__ == "__main__":
+    user_input = "How are you today?"
+    session_id = "1"
+    print(process(user_input, session_id))
+    # for message in store[session_id].messages:
+    #     print(f"{message.type}: {message.content}")
 
     
