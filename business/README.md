@@ -45,3 +45,41 @@ The system flowing step to step to grade essay;
 4. Deplt analysis: Gauges the level of critical thinking and insight presented
 
 
+# Career Assistant
+AI powered mentor design to simiplify and support your journey in Generative AI Learning, Resume preparation, Interview assistant and job hunting.
+
+## Key Features:
+1. Learning & Content creation:
+    Offers tailored learning pathways in GenAI, covering key topics and skill
+    Assists users in creating tutorial, blogs, and post based their interes or queries
+2. Q&A Support:
+    Provide demon Q&A  sessions for user needings guidance on concepts or codding issues
+3. Resume build and Review:
+    One on one resume consultation and guidance
+    Craft personalize, maket-relevant resumes optimized for current job trends
+4. Interview preresentation:
+    Host Q&A session on common and technical interview questions.
+    Similates real interview scenarios cn conduct mock interview.
+5. Job search assistant:
+    Guides user through the job search process, offering tailored insight and support. 
+    With the GenAI Career Assistant, your journey to a career in Generative AI becomes organized, personalized, and efficient!
+
+![alt text](image/career_assitant.png)
+
+
+## Key components
+1. States Managerment: Define state for each customer interaction
+2. Query Categorization: Classifying using queries into learning, Resume preparation, Interview or Job search.
+3. Sub categorization: Learnign (Tutorial, Q&A), Interview (Interview prep,Mock interview)  
+4. Response Generation: Creating appropriate responses based on the query category. Create .md files for Tutorial Blogs, Resume, Mock interview etc.
+5. Workflow Graph: Utilizing LangGraph to create a flexible and extensible workflow.
+
+
+## Method Details
+1. Initialization: Set up the environment and import necessary libraries.
+2. State Definition: Create a structure to hold query information, category, sub-category, and response.
+3. Node Functions: Implement separate functions for categorization, and response generation.
+4. Graph Construction: Use StateGraph to define the workflow, adding nodes and edges to represent the support process.
+5. Conditional Routing: Implement logic to route queries based on their category and sub- category.
+6. Workflow Compilation: Compile the graph into an executable application.
+7. Execution: Process users queries through the workflow and retrieve results.

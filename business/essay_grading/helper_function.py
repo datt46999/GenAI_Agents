@@ -86,3 +86,5 @@ def calculate_final_score(state: State) -> State:
         state["depth_score"] * 0.3
     )
     return state
+
+
