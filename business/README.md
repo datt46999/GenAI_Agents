@@ -83,3 +83,49 @@ AI powered mentor design to simiplify and support your journey in Generative AI 
 5. Conditional Routing: Implement logic to route queries based on their category and sub- category.
 6. Workflow Compilation: Compile the graph into an executable application.
 7. Execution: Process users queries through the workflow and retrieve results.
+
+
+
+# Manager assistant
+Tutorial demonstrates how to create AI agent assist in project managerment tasks including creating actionable tasks from give project description, identify dependency within the tasks, create task execution schedule for the project, and assign to individual task for project member based on their expertise and experience.Combine custom fuctions, structured output, and an agent that can streamline the project managerment, in praticular during project intitation/ setup process.
+
+
+Manager assustant was created to tranfrom how projects are initited by introducing automation, intelligence, and precision into the process. It enables project manager to steamless translate project description into structure, actionable plans, mapping dependencies for better worflow aligment and assign tasks based on team members's expertise and experience.
+
+Creating score risk for individual tasks allowing overall project risk assessment.
+
+## Key components
+1. LangGraph
+2. LLM
+
+## Note function and feature:
+1. task_generation: Node that extract task for given project description
+2. task_dependencies: Node that will evaluate the dependencies between the tasks
+3. task_scheduler: Node that scheduler tasks based on dependencies and team availability
+4. task_allocator: Node that will allocate tasks to team members
+5. risk_assesstor: Node that analaze risk associcated with schedule and allocation of task
+6. insigh_generator:  Node that generate insights from the schedule, task allocation and risk associated
+7. router: A help function that will route the agent to approriate node base on the project description.
+
+
+# E2E Testing
+
+Programatic browser control and E2E testing were traditionally done by writing script in framework such as Pupptteer or Playwright. create and execute these tests through Playwight.
+## Key Components:
+1. LangGraph: agent Implementation
+2. Playwright: Python playwight verson that use to for generate script that can execute the test
+3. Flask: A web framework that servers static HTML
+4. langchain_community
+
+
+## Methob:
+The E2E tests generate process goes through the following step:
+1. Instructions to action conversion: Convert user instruction for the testing into well defined action step that will be implemented
+2. Playwight code generation: Generation Playwight code chunks that execute specific action test
+3. Assertion Generation: Create assertions that specific whether the test have passed or not 
+4. Test execution: Evaluate the generation Playwright test case
+5. Report Generation: Create the concise reprt
+
+
+
+![alt text](image/E2E.png)
